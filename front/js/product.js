@@ -55,8 +55,6 @@ if (productId !== null) {
           let messageLocalStorageUpdating = false;
 
           const addProductLocalStorage = () => {
-
-
             let findProduct = produitEnregistreDansLocalStorage.find((x) => { return x.idProduct === optionsProduct.idProduct && x.colorProduct === optionsProduct.colorProduct });
             if (findProduct) {
               const total = Number(findProduct.quantityProduct) + Number(optionsProduct.quantityProduct);
