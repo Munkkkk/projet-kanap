@@ -23,7 +23,7 @@ async function showCart() {
                   <div class="cart__item__content">
                     <div class="cart__item__content__description">
                       <h2>${cart[i].name}</h2>
-                      <p>Vert</p>
+                      <p>${cart[i].color}</p>
                       <p>${price} €</p>
                     </div>
                     <div class="cart__item__content__settings">
@@ -37,6 +37,7 @@ async function showCart() {
                     </div>
                   </div>
                 </article>`;
+
 
         articles.innerHTML += article;
 
@@ -90,11 +91,13 @@ function updateQuantity() {
 
             if (inputValue > 100 || inputValue < 1) {
                 alert("La quantité doit etre comprise entre 1 et 100");
+                location.reload();
                 return;
             }
             let itemsStr = JSON.stringify(items);
             localStorage.setItem("cartObject", itemsStr);
             updateCart();
+            location.reload();
         });
     });
 }
@@ -117,7 +120,9 @@ function deleteItemCard() {
             if (deleteConfirm == true) {
                 localStorage.setItem("cartObject", JSON.stringify(cartItem));
                 alert("Article supprimé avec succès");
+                location.reload();
             }
+
 
             const card = deleteButton.closest(".cart__item");
             card.remove();
@@ -128,6 +133,7 @@ function deleteItemCard() {
                 localStorage.removeItem("cartOject");
                 alert('Panier vide, retour à l\'accueil.');
                 window.location.href = "index.html";
+
             }
         });
 
@@ -156,14 +162,13 @@ async function updateCart() {
 
 const inputs = document.querySelectorAll("input[type=text], input[type=email]");
 
-// Regex pour check les informations rentrées par l'utilisateur dans le formulaire
+
 let nameCheck = new RegExp(/^[a-zéèçà]{2,50}(-|)?([a-zéèçà]{2,50})?$/gim);
 let cityCheck = new RegExp(/^[a-zéèçà]{2,50}(-| )?([a-zéèçà]{2,50})?$/gim);
 let addressCheck = new RegExp(/^[a-zA-Z0-9\s,.'-]{3,}$/);
 let emailCheck = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
 
-// Une fonction pour chaque input, si la saisie de l'utilisateur
-// correspond à la regex, le booleon renvoie true sinon false
+
 const firstNameChecker = (value) => {
     let valueBoolean = false;
     if (!value.match(nameCheck)) {
@@ -229,7 +234,7 @@ const emailChecker = (value) => {
     return valueBoolean;
 };
 
-// target.id correspond à ce que rentre l'utilisateur dans le formulaire
+
 inputs.forEach((input) => {
     input.addEventListener("input", (e) => {
         switch (e.target.id) {
@@ -254,8 +259,6 @@ inputs.forEach((input) => {
     });
 });
 
-// Fonction qui va effectuer une requête POST à l'API fetch
-// lorsque l'utilisateur va cliquer sur le bouton "Commander"
 const cartForm = () => {
     const submitForm = document.getElementById("order");
     submitForm.addEventListener("click", (e) => {
@@ -264,13 +267,14 @@ const cartForm = () => {
         const products = [];
         for (let i = 0; i < cart.length; i++) {
             products.push(cart[i].id);
+            console.log(cart[i].id);
         }
-
         if (cart.length === 0 || products.length === 0) {
             alert("Veuillez ajoutez des articles au panier");
             return 0;
         }
-
+        console.log(cart.length);
+        console.log(products.length);
         for (let i = 0; i < cart.length; i++) {
             if (+cart[i].quantity < 1 || +cart[i].quantity > 100) {
                 alert(
@@ -280,13 +284,14 @@ const cartForm = () => {
             }
         }
 
+        console.log(products);
         const firstName = document.querySelector("#firstName").value;
         const lastName = document.querySelector("#lastName").value;
         const address = document.querySelector("#address").value;
         const city = document.querySelector("#city").value;
         const email = document.querySelector("#email").value;
 
-        // Si une fonction renvoie false on return 0 pour ne pas éxecuter le reste de la fonction (notamment le POST)
+
         if (
             !firstNameChecker(firstName) ||
             !lastNameChecker(lastName) ||
@@ -298,8 +303,7 @@ const cartForm = () => {
             return 0;
         }
 
-        // Création d'un objet avec une clé contact contenant le résultat du formulaire
-        // et une clé products qui est un tableau de productid
+
         const user = {
             contact: {
                 firstName,
@@ -311,7 +315,7 @@ const cartForm = () => {
             products,
         };
 
-        // Requête POST à l'API fetch on envoie l'objet user
+
         fetch("http://localhost:3000/api/products/order", {
 
             method: "POST",
@@ -321,10 +325,10 @@ const cartForm = () => {
             },
         })
             .then((response) => response.json())
-            // On récupère orderId qui correspond au numéro de commande
+
             .then((data) => {
                 window.location.href = `confirmation.html?id=${data.orderId}`;
-                localStorage.clear();
+                // localStorage.clear();
             })
             .catch((error) => alert("Il y a un problème: ", error.message));
     });
