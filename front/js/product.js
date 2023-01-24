@@ -81,11 +81,11 @@ fetch(`http://localhost:3000/api/products/` + id)
 
         let cartItem = {
           id: id,
-          name: data.name,
+          // name: data.name,
           color: color,
           quantity: parseInt(quantity),
-          imageUrl: data.imageUrl,
-          altTxt: data.altTxt,
+          // imageUrl: data.imageUrl,
+          // altTxt: data.altTxt,
         };
 
 

@@ -11,20 +11,20 @@ async function showCart() {
 
     for (let i = 0; i < cart.length; i++) {
         console.log(cart[i].id);
-        let price = await getProductPriceById(cart[i].id);
+        let info = await getProductPriceById(cart[i].id);
 
         totalArticlesQuantity += parseInt(cart[i].quantity);
-        totalArticlesPrice += parseInt(cart[i].quantity * price);
+        totalArticlesPrice += parseInt(cart[i].quantity * info.price);
 
         let article = `<article class="cart__item" data-id="${cart[i].id}" data-color="${cart[i].color}">
                   <div class="cart__item__img">
-                    <img src="${cart[i].imageUrl}" alt="${cart[i].altTxt}">
+                    <img src="${info.imageUrl}" alt="${info.altTxt}">
                   </div>
                   <div class="cart__item__content">
                     <div class="cart__item__content__description">
-                      <h2>${cart[i].name}</h2>
+                      <h2>${info.name}</h2>
                       <p>${cart[i].color}</p>
-                      <p>${price} €</p>
+                      <p>${info.price} €</p>
                     </div>
                     <div class="cart__item__content__settings">
                       <div class="cart__item__content__settings__quantity">
@@ -53,6 +53,8 @@ async function showCart() {
 showCart();
 
 
+
+
 async function getProductPriceById(artId) {
     return fetch("http://localhost:3000/api/products/")
         .then(function (res) {
@@ -65,7 +67,7 @@ async function getProductPriceById(artId) {
         .then((response) => {
             for (let i = 0; i < response.length; i++) {
                 if (response[i]._id == artId) {
-                    return response[i].price;
+                    return response[i];
                 }
             }
         });
@@ -117,9 +119,14 @@ function deleteItemCard() {
             deleteConfirm = window.confirm(
                 "Etes vous sûr de vouloir supprimer cet article ?"
             );
+
             if (deleteConfirm == true) {
                 localStorage.setItem("cartObject", JSON.stringify(cartItem));
                 alert("Article supprimé avec succès");
+                location.reload();
+            }
+
+            else {
                 location.reload();
             }
 
@@ -328,7 +335,7 @@ const cartForm = () => {
 
             .then((data) => {
                 window.location.href = `confirmation.html?id=${data.orderId}`;
-                // localStorage.clear();
+                localStorage.clear();
             })
             .catch((error) => alert("Il y a un problème: ", error.message));
     });
